@@ -283,7 +283,7 @@ class FireCrawlLoader(BaseLoader):
             crawl_response = self.firecrawl.crawl_url(
                 self.url, **adapted_params
             )
-            firecrawl_docs = crawl_response.get("data", [])
+            firecrawl_docs = crawl_response.data if hasattr(crawl_response, 'data') else []
         elif self.mode == "map":
             if not self.url:
                 raise ValueError("URL is required for map mode")
@@ -310,9 +310,9 @@ class FireCrawlLoader(BaseLoader):
                 metadata = {}
             else:
                 page_content = (
-                    doc.get("markdown") or doc.get("html") or doc.get("rawHtml", "")
+                    getattr(doc, "markdown", None) or getattr(doc, "html", None) or getattr(doc, "rawHtml", "")
                 )
-                metadata = doc.get("metadata", {})
+                metadata = getattr(doc, "metadata", {}) or {}
             if not page_content:
                 continue
             yield Document(
