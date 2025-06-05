@@ -279,8 +279,9 @@ class FireCrawlLoader(BaseLoader):
         elif self.mode == "crawl":
             if not self.url:
                 raise ValueError("URL is required for crawl mode")
+            adapted_params = self.legacy_crawler_options_adapter(self.params)
             crawl_response = self.firecrawl.crawl_url(
-                self.url, params=self.legacy_crawler_options_adapter(self.params)
+                self.url, **adapted_params
             )
             firecrawl_docs = crawl_response.get("data", [])
         elif self.mode == "map":
